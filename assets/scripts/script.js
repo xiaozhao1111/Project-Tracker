@@ -8,8 +8,8 @@ let timeBlockEl = $('#time-block');
 let currentHour = moment().set({minutes: 0, seconds: 0, milliseconds: 0});
 
 //  create empty task object
+// The data structure for taskArr was inspired by Steven Riley at the bootCamp
 let taskArr = {};
-
 taskArr = JSON.parse(localStorage.getItem('storedTaskArr'));
 
 // function to show current date
@@ -17,7 +17,6 @@ function displayCurrentDay() {
     let today = moment().format('dddd, MMMM Do');
     currentDayEl.text(today);
 }
-
 
 // function completed to display arow at a specific hour
 function displayTask(time) {
@@ -53,11 +52,9 @@ function renderAllTasks() {
     }
 }
 
-
 // function to manage the tasks to local storage
 function manageTask(event) {
     event.preventDefault();
-    console.log("The save button was clicked.");
 
     // get the target element, hour and task 
     let targetEl = event.target;
@@ -74,8 +71,6 @@ function manageTask(event) {
 
     localStorage.setItem('storedTaskArr', JSON.stringify(taskArr));
 }
-
-
 
 $(function() {
     // dispaly current date
