@@ -52,10 +52,9 @@ function renderAllTasks() {
     }
 }
 
-// function to manage the tasks to local storage
+// function to manage the tasks to local storage. The user can add, edit or delete a task
 function manageTask(event) {
     event.preventDefault();
-
     // get the target element, hour and task 
     let targetEl = event.target;
     let targetHour = targetEl.getAttribute('data-time');  
@@ -68,17 +67,19 @@ function manageTask(event) {
     } else {
         taskArr[targetHour] = taskToSave; 
     }
-
     localStorage.setItem('storedTaskArr', JSON.stringify(taskArr));
 }
 
 $(function() {
-    // dispaly current date
-    displayCurrentDay();
-    if(taskArr === null) {
-        taskArr = {};
-    }
-    renderAllTasks();
+    // refresh the current date and all tasks every hour if the page is not closed.
+    setInterval(function(){
+        // dispaly current date
+        displayCurrentDay();
+        if(taskArr === null) {
+            taskArr = {};
+        }
+        renderAllTasks();
+    }, 1000 * 60 * 60)
     // event listener for the save button
     timeBlockEl.on('click', '.saveBtn', manageTask);
 })
