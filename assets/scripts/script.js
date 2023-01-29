@@ -5,10 +5,13 @@ let timeBlockEl = $('#time-block');
 // create global varibales
 let currentHour = moment().hour();
 
+// 
 let task = {
-    time: '9 AM',
-    toDo: 'place holder'
+    time: '',
+    toDo: ''
 }
+
+let taskArr = [];
 
 // function to show current date
 function displayCurrentDay() {
@@ -35,6 +38,26 @@ function checkIsNewDay() {
     }
 }
 
+function initialTaskArr() {
+    
+    for(let i = 9; i < 18; i++) {
+        if(i < 13) {
+            let temTask = {time: '', toDo: ''}
+            temTask.time = i + ' AM';
+            taskArr.push(temTask);
+        } else {
+            let temTask = {time: '', toDo: ''}
+            temTask.time = i -12 + ' PM';
+            taskArr.push(temTask);
+            
+        }
+    }
+}
+
+
+initialTaskArr();
+console.log(taskArr);
+taskArr.forEach(task => displayTask(task));
 
 
 // function completed to display arow at a specific hour
@@ -55,7 +78,7 @@ function displayTask(task) {
 }
 
 
-displayTask(task);
+
 
 
 
