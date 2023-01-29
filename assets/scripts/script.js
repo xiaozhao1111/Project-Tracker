@@ -13,6 +13,8 @@ let task = {
 
 let taskArr = [];
 
+taskArr = JSON.parse(localStorage.getItem('storedTaskArr'));
+
 // function to show current date
 function displayCurrentDay() {
     let today = moment().format('dddd, MMMM Do');
@@ -49,26 +51,22 @@ function initialTaskArr() {
             let temTask = {time: '', toDo: ''}
             temTask.time = i -12 + ' PM';
             taskArr.push(temTask);
-            
         }
     }
 }
 
 
-initialTaskArr();
-console.log(taskArr);
-taskArr.forEach(task => displayTask(task));
-
-
 // function completed to display arow at a specific hour
 function displayTask(task) {
     // create a single row in the table
-    let taskRowEl = $('<tr>');
-    let hourEl = $('<td>').addClass('hour col-2').text(task.time);
-    let toDoEl = $('<td>').addClass('col-8').text(task.toDo);
-    let saveBtnEl = $('<td>').addClass('saveBtn col-2').text('Save');
+    let taskRowEl = $('<tr>').addClass('row');
+    let hourEl = $('<td>').addClass('hour col-2 algin-text-middle').text(task.time);
+    let toDoEl = $('<td>').addClass('col-8 p-0');
+    let toDoInput = $('<input>').val(task.toDo)
+    let saveBtnEl = $('<td>').addClass('saveBtn col-2').text('Save 💾');
 
     // append elements to the table row and table
+    toDoEl.append(toDoInput);
     taskRowEl.append(
         hourEl,
         toDoEl,
@@ -77,7 +75,48 @@ function displayTask(task) {
     timeBlockEl.append(taskRowEl);
 }
 
+// function to save the tasks to local storage
+function saveTask(event) {
+    event.preventDefault();
+    
 
+    // get the elements 
+    let targetEl = $(event.target);
+    let targetParentEl = targetEl.parent('tr'); // get the element of the clicked row
+    let targetHourEl = targetParentEl.children('.hour');  // get the element of the hour
+    let hour = $((targetHourEl))[0].innerText.trim(); // get the hour in the clicked row
+    
+
+    if (taskArr == null) {
+        taskArr = [];
+        initialTaskArr();
+    } else {
+        taskArr.forEach(task =>
+        {
+            if (task.time === hour) {
+                task.toDo = $(targetParentEl.find('input')).val();
+            }
+        })
+    }
+    localStorage.setItem('storedTaskArr', JSON.stringify(taskArr));
+}
+
+
+// event listener for the save button
+timeBlockEl.on('click', '.saveBtn', saveTask);
+
+
+
+if (taskArr == null) {
+        taskArr = [];
+        console.log("No data was stored today.");
+        initialTaskArr();
+    } else {
+        console.log("There is stored data.");
+        console.log(taskArr);
+        taskArr.forEach(task => displayTask(task));
+
+    }
 
 
 
