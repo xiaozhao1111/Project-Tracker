@@ -71,15 +71,13 @@ function manageTask(event) {
 }
 
 $(function() {
-    // refresh the current date and all tasks every hour if the page is not closed.
-    setInterval(function(){
-        // dispaly current date
-        displayCurrentDay();
-        if(taskArr === null) {
+    // dispaly current date
+    displayCurrentDay();
+
+    if(taskArr === null) {
             taskArr = {};
         }
         renderAllTasks();
-    }, 1000 * 60 * 60)
     // event listener for the save button
     timeBlockEl.on('click', '.saveBtn', manageTask);
 })
