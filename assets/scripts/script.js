@@ -1,17 +1,14 @@
+
 // carete DOM elements 
 let currentDayEl = $('#currentDay');
 let timeBlockEl = $('#time-block');
 
+
 // create global varibales
-let currentHour = moment().hour();
+let currentHour = moment().set({minutes: 0, seconds: 0, milliseconds: 0});
 
-// 
-let task = {
-    time: '',
-    toDo: ''
-}
-
-let taskArr = [];
+//  create empty task object
+let taskArr = {};
 
 taskArr = JSON.parse(localStorage.getItem('storedTaskArr'));
 
@@ -21,110 +18,72 @@ function displayCurrentDay() {
     currentDayEl.text(today);
 }
 
-// function to check if it's a new day. 
-// PS: If it's a new day, all the stored tasks will be removed.
-function checkIsNewDay() {
-    let storedDate = localStorage.getItem('today');
-    if(storedDate === null) {
-        localStorage.setItem('today', moment().format('D/M/YYYY'))
-        return true;
-    } else {
-        if (storedDate === moment().format('D/M/YYYY')) {
-            console.log("It's the same day.");
-            return false;
-        } else {
-            storedDate = moment().format('D/M/YYYY');
-            console.log("It's a new day");
-            return true;
-        }
-    }
-}
-
-function initialTaskArr() {
-    
-    for(let i = 9; i < 18; i++) {
-        if(i < 13) {
-            let temTask = {time: '', toDo: ''}
-            temTask.time = i + ' AM';
-            taskArr.push(temTask);
-        } else {
-            let temTask = {time: '', toDo: ''}
-            temTask.time = i -12 + ' PM';
-            taskArr.push(temTask);
-        }
-    }
-}
-
 
 // function completed to display arow at a specific hour
-function displayTask(task) {
+function displayTask(time) {
+    
     // create a single row in the table
     let taskRowEl = $('<tr>').addClass('row');
-    let hourEl = $('<td>').addClass('hour col-2 algin-text-middle').text(task.time);
+    let hourEl = $('<td>').addClass('hour col-2').text(time.format('h A'));
     let toDoEl = $('<td>').addClass('col-8 p-0');
-    let toDoInput = $('<input>').val(task.toDo)
+    let toDoInput = $('<textarea>').addClass('description');
+    toDoInput.attr('id', time.format('H')).text(taskArr[time.format('H')]);
     let saveBtnEl = $('<td>').addClass('saveBtn col-2').text('Save 💾');
+    saveBtnEl.attr('data-time', time.format('H'))
 
     // append elements to the table row and table
     toDoEl.append(toDoInput);
-    taskRowEl.append(
-        hourEl,
-        toDoEl,
-        saveBtnEl
-    );
+    taskRowEl.append( hourEl, toDoEl, saveBtnEl);
     timeBlockEl.append(taskRowEl);
+
+    // check the task slot color 
+    if ( time.isBefore(currentHour)) {
+        toDoInput.addClass('past')
+    } else if (time.isSame(currentHour)) {
+        toDoInput.addClass('present')
+    } else {
+        toDoInput.addClass('future')
+    }
 }
 
-// function to save the tasks to local storage
-function saveTask(event) {
-    event.preventDefault();
-    
-
-    // get the elements 
-    let targetEl = $(event.target);
-    let targetParentEl = targetEl.parent('tr'); // get the element of the clicked row
-    let targetHourEl = targetParentEl.children('.hour');  // get the element of the hour
-    let hour = $((targetHourEl))[0].innerText.trim(); // get the hour in the clicked row
-    
-
-    if (taskArr == null) {
-        taskArr = [];
-        initialTaskArr();
-    } else {
-        taskArr.forEach(task =>
-        {
-            if (task.time === hour) {
-                task.toDo = $(targetParentEl.find('input')).val();
-            }
-        })
+function renderAllTasks() {
+    for( let i = 9; i < 18; i++) {
+        let timeSlot = moment().set({hour: i})
+        displayTask(timeSlot);
     }
+}
+
+
+// function to manage the tasks to local storage
+function manageTask(event) {
+    event.preventDefault();
+    console.log("The save button was clicked.");
+
+    // get the target element, hour and task 
+    let targetEl = event.target;
+    let targetHour = targetEl.getAttribute('data-time');  
+    let taskToSave = $('#'+targetHour).val();
+
+    if (taskArr === null || taskArr.date != moment().format('DD/MM/YYYY')) {
+        taskArr = {};
+        taskArr.date = moment().format('DD/MM/YYYY');
+        taskArr[targetHour] = taskToSave; 
+    } else {
+        taskArr[targetHour] = taskToSave; 
+    }
+
     localStorage.setItem('storedTaskArr', JSON.stringify(taskArr));
 }
 
 
-// event listener for the save button
-timeBlockEl.on('click', '.saveBtn', saveTask);
 
-
-
-if (taskArr == null) {
-        taskArr = [];
-        console.log("No data was stored today.");
-        initialTaskArr();
-    } else {
-        console.log("There is stored data.");
-        console.log(taskArr);
-        taskArr.forEach(task => displayTask(task));
-
+$(function() {
+    // dispaly current date
+    displayCurrentDay();
+    if(taskArr === null) {
+        taskArr = {};
     }
-
-
-
-
-
-
-// display the current date every second
-setInterval(displayCurrentDay,1000);
-
-// check if the day has
-setInterval(checkIsNewDay, 60000);
+    renderAllTasks();
+    // event listener for the save button
+    timeBlockEl.on('click', '.saveBtn', manageTask);
+})

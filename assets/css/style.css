@@ -7,7 +7,7 @@ body {
 textarea {
     background: transparent;
     border: none;
-    resize: none;
+    resize: auto;
     color: #000000;
     border-left: 1px solid black;
     padding: 10px;
@@ -23,6 +23,7 @@ textarea {
 
 .description {
     white-space: pre-wrap;
+    width: 100%;
 }
 
 .time-block {
@@ -62,13 +63,16 @@ textarea {
     border-left: 1px solid black;
     border-top-right-radius: 15px;
     border-bottom-right-radius: 15px;
-    background-color: #06aed5;
+    background-color: #0f727d;
     color: white;
 }
 
-.saveBtn :hover {
-    font-size: 20px;
-    background-color: #7323da;
+
+.saveBtn:hover{
+    background-color: #292bad ;
+    box-shadow: 0px 0px 5px rgb(69, 187, 181);
+    scale: 1.05;
+    transition: all 0.3s ease-in-out;
 }
 
 table td {
