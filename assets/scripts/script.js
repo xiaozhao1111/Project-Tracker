@@ -74,10 +74,14 @@ $(function() {
     // dispaly current date
     displayCurrentDay();
 
-    if(taskArr === null) {
-            taskArr = {};
-        }
-        renderAllTasks();
+    // check the localstorage. If it's null or not same day, clear the tasks in localstorage and reset a new date
+    if(taskArr === null || taskArr.date != moment().format('DD/MM/YYYY')) {
+        taskArr = {};
+        taskArr.date = moment().format('DD/MM/YYYY');
+        localStorage.setItem('storedTaskArr', JSON.stringify(taskArr))
+    } 
+    // render all the timeblock based on the localstorage
+    renderAllTasks();
     // event listener for the save button
     timeBlockEl.on('click', '.saveBtn', manageTask);
 })
